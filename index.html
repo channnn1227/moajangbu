@@ -520,7 +520,7 @@ function insights(month,ents){
   if(prevStats.length>=2){
     let best=null;
     for(const [c,v] of Object.entries(st.byCat)){if(v<=0)continue;const avg=prevStats.reduce((a,s)=>a+Math.max(0,s.byCat[c]||0),0)/prevStats.length,diff=v-avg;if(diff>=50000&&v>=avg*1.3&&(!best||diff>best.diff))best={c,v,avg,diff}}
-    if(best)out.push({id:`spike-${month}-${best.c}`,tone:"warn",title:`${best.c} 지출이 평소보다 ${short(best.diff)}원 많아요`,body:`최근 ${prevStats.length}달 평균은 ${short(best.avg)}원인데 이번 달은 ${cur?"벌써 ":""}${short(best.v)}원이에요.`,act:{tab:"list",cat:best.c,label:`${best.c} 내역 보기`}});
+    if(best)out.push({id:`spike-${month}-${best.c}`,tone:"warn",title:`${best.c} 지출이 평소보다 ${short(best.diff)}원 많아요`,body:(best.avg<1000?`최근 ${prevStats.length}달에는 ${best.c} 지출이 거의 없었는데`:`최근 ${prevStats.length}달 평균은 ${short(best.avg)}원인데`)+` 이번 달은 ${cur?"벌써 ":""}${short(best.v)}원이에요.`,act:{tab:"list",cat:best.c,label:`${best.c} 내역 보기`}});
   }
   const ps=monthStats(prevMonthOf(month),ents);
   if((!cur||dayNo>=25)&&st.inc>0&&ps.inc>0){
