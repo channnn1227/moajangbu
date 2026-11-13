@@ -338,6 +338,8 @@ const S={tab:"cal",month:ym(todayStr()),sel:todayStr(),q:"",catFilter:"",
  me:null,user:null,profiles:{},sample:null,sampleImg:false,downloads:null};
 
 /* ================= store: shared db, or this device as fallback ================= */
+/* 새 주소(Cloudflare Pages). 비어 있으면 이전 안내를 띄우지 않는다 */
+const NEW_HOME="";
 const LKEY="moajangbu-v1",BKEY="moajangbu-lastbackup",TKEY="moajangbu-tip-closed";
 /* 사람마다 자기 장부: data/users/<id>/ 아래는 본인만 읽고 쓴다(앱 주인도 못 봄) */
 let db=null,base="";
@@ -689,6 +691,8 @@ function render(){
   else{const lb=lastBackup(),days=lb?Math.round((parseYmd(todayStr())-parseYmd(lb))/864e5):null;
     if(S.tx.size>=5&&(days===null||days>=14))banner=`<div class="banner">이 장부는 <b>이 휴대폰에만</b> 저장돼요. ${days===null?"아직 백업한 적이 없어요.":days+"일 동안 백업하지 않았어요."} <button class="linkbtn" data-backup="1">지금 백업하기</button></div>`;}
   let tip="";try{if(!isStandalone()&&!localStorage.getItem(TKEY))tip=`<div class="banner"><button class="x" data-tip-close="1" aria-label="안내 닫기">✕</button><b>앱처럼 쓰려면 홈 화면에 추가하세요.</b> ${/iPhone|iPad|iPod/.test(navigator.userAgent)?"Safari 공유 버튼 → 홈 화면에 추가":"브라우저 메뉴 → 홈 화면에 추가"}</div>`}catch(e){}
+  /* 예전 주소(GitHub Pages)에서 열면 새 주소로 옮기는 안내 */
+  if(NEW_HOME&&location.hostname.endsWith("github.io"))banner=`<div class="banner warn"><b>모아장부 주소가 바뀌어요.</b> 지금 장부는 이 주소에만 저장돼 있어요. 아래에서 백업 파일을 저장한 뒤, <a href="${esc(NEW_HOME)}" style="color:var(--accent);font-weight:600">새 주소</a>에서 홈 화면에 추가하고 자산 탭 → 백업 파일 불러오기를 하세요. <button class="linkbtn" data-backup="1">지금 백업하기</button></div>`+banner;
   banner=tip+banner;
   $("#app").innerHTML=`<header class="top"><span class="brand">모아장부</span>${monthNav}</header>${banner}${body}`;
 }

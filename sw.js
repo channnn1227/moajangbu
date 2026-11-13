@@ -18,7 +18,11 @@ self.addEventListener("fetch", e => {
   }
   if (req.mode === "navigate") {
     // 새 버전이 있으면 받고, 인터넷이 없으면 저장된 화면
-    e.respondWith(fetch(req).then(res => { caches.open(VERSION).then(c => c.put("./index.html", res.clone())); return res; }).catch(() => caches.match("./index.html")));
+    // 서버가 오류(404 등)를 주면 저장된 화면을 연다. 사이트가 내려가도 앱이 열려서 백업할 수 있게
+    e.respondWith(fetch(req).then(res => {
+      if (!res.ok) return caches.match("./index.html").then(hit => hit || res);
+      caches.open(VERSION).then(c => c.put("./index.html", res.clone())); return res;
+    }).catch(() => caches.match("./index.html")));
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req)));
