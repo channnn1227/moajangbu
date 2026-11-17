@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>모아장부로 보내는 중</title>
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.5 -apple-system,system-ui,sans-serif;color:#16181d;background:#fff}
+  @media (prefers-color-scheme:dark){body{color:#e8eaee;background:#0e1014}}
+  p{margin:0;padding:24px;text-align:center}
+</style>
+</head>
+<body>
+<p id="m">모아장부로 보내는 중…</p>
+<script>
+/* 단축어 → 고정된 모아장부(Claude 아티팩트) 중계.
+   아티팩트는 주소 끝(#)에 영문·숫자·하이픈만 넘겨줘서, 받은 내용을 Base64로 바꾸고
+   + → -p, / → -s 로 치환하고 = 를 지워 #add-… 로 보낸다. 앱이 같은 규칙으로 되돌린다.
+   단축어 주소: https://moajangbu.pages.dev/go.html#add=(URL 인코딩한 텍스트) */
+const TARGET="https://claude.ai/artifact/5GGDjNqMUxDfV1KUKy6zki";
+function read(){
+  try{
+    const h=location.hash.match(/[#&]add=([^&]*)/);
+    if(h)return decodeURIComponent(h[1].replace(/\+/g," "));
+    return new URLSearchParams(location.search).get("add")||"";
+  }catch(e){return ""}
+}
+function enc(text){
+  const bytes=new TextEncoder().encode(text);let bin="";
+  for(let i=0;i<bytes.length;i+=8192)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));
+  return btoa(bin).replace(/\+/g,"-p").replace(/\//g,"-s").replace(/=+$/,"");
+}
+const text=read();
+if(text.trim()){location.replace(TARGET+"#add-"+enc(text))}
+else{document.getElementById("m").textContent="보낼 내용이 없어요. 단축어에서 텍스트를 넘겨 주세요.";setTimeout(()=>location.replace(TARGET),1500)}
+</script>
+</body>
+</html>
