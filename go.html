@@ -32,7 +32,8 @@ function enc(text){
   return btoa(bin).replace(/\+/g,"-p").replace(/\//g,"-s").replace(/=+$/,"");
 }
 const text=read();
-if(text.trim()){location.replace(TARGET+"#add-"+enc(text))}
+/* 장부가 이미 열려 있어도 새로 불러와 읽도록 매번 다른 주소(?r=시각)로 연다 */
+if(text.trim()){location.replace(TARGET+"?r="+Date.now()+"#add-"+enc(text))}
 else{document.getElementById("m").textContent="보낼 내용이 없어요. 단축어에서 텍스트를 넘겨 주세요.";setTimeout(()=>location.replace(TARGET),1500)}
 </script>
 </body>
